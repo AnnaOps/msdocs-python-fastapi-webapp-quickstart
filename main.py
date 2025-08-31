@@ -4,10 +4,13 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import uvicorn
 
-
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
+
+@app.get("/healthz")
+def healthz():
+    return {"status": "ok"}
 
 @app.get("/", response_class=HTMLResponse)
 async def index(request: Request):
@@ -16,9 +19,7 @@ async def index(request: Request):
 
 @app.get('/favicon.ico')
 async def favicon():
-    file_name = 'favicon.ico'
-    file_path = './static/' + file_name
-    return FileResponse(path=file_path, headers={'mimetype': 'image/vnd.microsoft.icon'})
+    return FileResponse(path='./static/favicon.ico', media_type='image/x-icon')
 
 @app.post('/hello', response_class=HTMLResponse)
 async def hello(request: Request, name: str = Form(...)):
